@@ -1,0 +1,13 @@
+{
+  "name": "add-model-agent-sdk-example",
+  "private": true,
+  "type": "module",
+  "description": "Example: the add-model skill run from a terminal program through the Claude Agent SDK",
+  "scripts": {
+    "check": "node add-model.mjs --check"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.325",
+    "@playwright/mcp": "^0.0.85"
+  }
+}

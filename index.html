@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A transformer in 3D</title>
+    <link rel="stylesheet" href="src/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <main id="stage">
+        <div id="scene"></div>
+
+        <header id="hud">
+          <div class="head">
+            <h1>A transformer in 3D</h1>
+            <p class="sub">
+              Every cube is one real number. Two blocks, untrained: all weights are random.
+              <span class="dims">V = 16 · T = 6 · d<sub>model</sub> = 12 · h = 3 · d<sub>k</sub> = 4</span>
+            </p>
+          </div>
+          <div class="controls">
+            <label class="switch">
+              <input type="checkbox" id="causal" checked />
+              <span class="track"></span>
+              <span>Causal mask</span>
+            </label>
+            <div class="seg" id="headseg">
+              <span class="seg-label">Focus head</span>
+              <button data-h="-1" class="on">All</button>
+              <button data-h="0" class="h0">0</button>
+              <button data-h="1" class="h1">1</button>
+              <button data-h="2" class="h2">2</button>
+            </div>
+          </div>
+        </header>
+
+        <div class="legend">
+          <div class="lg"><span class="bar diverge"></span><span>− &nbsp;value&nbsp; +</span></div>
+          <div class="lg"><span class="bar attn"></span><span>weight / probability 0 → 1</span></div>
+          <div class="lg"><span class="sw tile"></span><span>weights (flat tiles)</span></div>
+          <div class="lg"><span class="sw blocked"></span><span>masked (−∞)</span></div>
+        </div>
+
+        <nav id="stepnav">
+          <button id="prev" aria-label="Previous step">←</button>
+          <div class="mid">
+            <div id="step-title"></div>
+            <div id="chips"></div>
+          </div>
+          <button id="next" aria-label="Next step">→</button>
+          <button id="reset" title="Re-centre the camera on this step">Reset view</button>
+        </nav>
+
+        <div id="tooltip" hidden></div>
+      </main>
+
+      <aside id="panel">
+        <div id="panel-body"></div>
+        <section id="inspector" hidden></section>
+      </aside>
+    </div>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>

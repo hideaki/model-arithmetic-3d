@@ -1,0 +1,18 @@
+# Installed, not written here
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+
+# Settings and keys never belong in the repository
+.env
+.env.*
+.claude/settings.local.json
+
+# macOS and editors
+.DS_Store
+.vscode/
+.idea/
+
+# Screenshots the browser tools leave behind
+.playwright-mcp/

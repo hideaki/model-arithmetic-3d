@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Compiled presentation</title>
+    <link rel="stylesheet" href="src/style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <!-- Everything on this page is produced by the compiler from a program in
+         programs/. Choose one with ?program=name (default: transformer). -->
+    <div id="app">
+      <main id="stage">
+        <div id="scene"></div>
+
+        <header id="hud">
+          <div class="head">
+            <h1 id="title"></h1>
+            <p class="sub"><span id="subtitle"></span> <span class="dims" id="dims"></span></p>
+          </div>
+          <div class="controls" id="controls"></div>
+        </header>
+
+        <div class="legend">
+          <div class="lg"><span class="bar diverge"></span><span>− &nbsp;value&nbsp; +</span></div>
+          <div class="lg"><span class="bar attn"></span><span>weight / probability 0 → 1</span></div>
+          <div class="lg"><span class="sw tile"></span><span>learned weights (gold tiles)</span></div>
+          <div class="lg"><span class="sw tile fixed"></span><span>fixed in advance (silver tiles)</span></div>
+          <div class="lg"><span class="sw blocked"></span><span>masked (−∞)</span></div>
+        </div>
+
+        <nav id="stepnav">
+          <button id="prev" aria-label="Previous step">←</button>
+          <div class="mid">
+            <div id="step-title"></div>
+            <div id="chips"></div>
+          </div>
+          <button id="next" aria-label="Next step">→</button>
+          <button id="reset" title="Re-centre the camera on this step">Reset view</button>
+        </nav>
+
+        <div id="tooltip" hidden></div>
+      </main>
+
+      <aside id="panel">
+        <div id="panel-body"></div>
+        <section id="inspector" hidden></section>
+        <!-- Questions to a model about what is on screen (runtime/ask.js). Needs serve.py and an API key. -->
+        <section id="ask">
+          <button id="ask-toggle" aria-expanded="false" aria-controls="ask-body">Ask about this page</button>
+          <div id="ask-body" hidden>
+            <div id="ask-log" aria-live="polite"></div>
+            <form id="ask-form">
+              <textarea id="ask-input" rows="2" placeholder="Ask about this step, or about the cube you pinned"></textarea>
+              <button id="ask-send" type="submit">Ask</button>
+            </form>
+            <p id="ask-foot">Answers are written by Claude. It reads the numbers from this page; its wording is not checked the way the arithmetic is.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+    <script type="module" src="runtime/main.js"></script>
+  </body>
+</html>

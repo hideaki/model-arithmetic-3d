@@ -1,0 +1,58 @@
+[
+  {
+    "name": "go_to_step",
+    "description": "Move the viewer's page to one step of the tour, and return that step's full text. Use it when the viewer asks to be shown something, or asks where something happens. The viewer sees the page change. Step numbers are in the step list.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "step": { "type": "integer", "description": "The step number, from the step list." }
+      },
+      "required": ["step"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "read_step",
+    "description": "Return the full text of one step without moving the viewer's page: the author's explanation, the generated account of exactly what is computed, the tensors it introduces with their shapes, and its code line. Use it to check what another step says before you state it.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "step": { "type": "integer", "description": "The step number, from the step list." }
+      },
+      "required": ["step"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "show_cube",
+    "description": "Pin one cube on the viewer's page and return its exact value, how it was computed, and which cells it was computed from. The viewer sees the cube and its sources light up. If the tour has not yet reached the step that introduces the tensor, the page moves to that step first. Address the cube by its place in the tensor as drawn (slab, row, column, each counted from 0), using the sizes in the tensor list.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "tensor": { "type": "string", "description": "The tensor's id, from the tensor list (not its displayed name)." },
+        "slab": { "type": "integer", "description": "Which slab, from 0. Use 0 for a tensor drawn as one slab." },
+        "row": { "type": "integer", "description": "Which row of the slab, from 0." },
+        "col": { "type": "integer", "description": "Which column of the slab, from 0." }
+      },
+      "required": ["tensor", "slab", "row", "col"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "read_cells",
+    "description": "Return the exact values of a rectangle of one slab of a tensor, at most 400 numbers, without changing the viewer's page. Use it whenever you are about to state a number that is not already in what you were given. Rows and columns are counted from 0 and both ends are included; leave a range out to read all of it.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "tensor": { "type": "string", "description": "The tensor's id, from the tensor list (not its displayed name)." },
+        "slab": { "type": "integer", "description": "Which slab, from 0. Use 0 for a tensor drawn as one slab." },
+        "row_from": { "type": "integer" },
+        "row_to": { "type": "integer" },
+        "col_from": { "type": "integer" },
+        "col_to": { "type": "integer" }
+      },
+      "required": ["tensor", "slab"],
+      "additionalProperties": false
+    }
+  }
+]

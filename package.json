@@ -1,0 +1,12 @@
+{
+  "name": "attention-3d",
+  "private": true,
+  "type": "module",
+  "description": "Interactive 3D model of a one-block GPT-style transformer with exact tensor shapes",
+  "scripts": {
+    "start": "python3 serve.py 5173",
+    "test": "node --test",
+    "describe": "node tools/describe.mjs",
+    "start:ask": ".venv/bin/python serve.py 5173"
+  }
+}

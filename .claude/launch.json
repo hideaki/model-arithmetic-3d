@@ -1,0 +1,34 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "attention-3d",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "serve.py",
+        "5173"
+      ],
+      "port": 5173
+    },
+    {
+      "name": "compiled-dev",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": [
+        "serve.py",
+        "5174"
+      ],
+      "port": 5174
+    },
+    {
+      "name": "ask-stand-in",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "ASK_FAKE=1",
+        ".venv/bin/python",
+        "serve.py",
+        "5175"
+      ],
+      "port": 5175
+    }
+  ]
+}
