@@ -48,7 +48,7 @@ Pages:
 - `compiled.html?program=gat` : the graph attention network, from the compiler
 - `index.html` : the original hand-written transformer, kept as the reference
 
-There is no build step and no dependencies to install. Three.js r0.170 loads from a CDN through an import map. The project has been a git repository since 2026-11-15 (branch `main`); everything before that date is one first commit. It was prepared for publishing the same day: `README.md`, an MIT `LICENSE`, and a GitHub workflow that runs `npm test` (not yet run, since nothing has been pushed). `.venv/`, `node_modules/` and settings files are ignored.
+There is no build step and no dependencies to install. Three.js r0.170 loads from a CDN through an import map. The project has been a git repository since 2026-11-15 (branch `main`); everything before that date is one first commit. It was prepared for publishing the same day: `README.md`, an MIT `LICENSE`, and a GitHub workflow that runs `npm test`. It was pushed that evening to a **private** repository, `github.com/hideaki/model-arithmetic-3d` (remote `origin`), and the workflow's first run passed. Making the repository public is the owner's decision and has not been made. `.venv/`, `node_modules/` and settings files are ignored.
 
 ## 4. Code map
 
