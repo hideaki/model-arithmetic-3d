@@ -137,7 +137,7 @@ Do not fake it: no numbers typed into the program, no hidden shortcut that chang
 
 ## Do not
 
-- Read `~/.config/transformer-3d/.env`. It holds the owner's API key.
+- Read `~/.config/model-arithmetic-3d/.env`. It holds the owner's API key.
 - Edit `src/`, except `src/style.css`. It is the frozen reference.
 - Reorder parameter declarations in `programs/transformer.js`: its test depends on the order.
 - Polish the compiler or the other pages while adding a model. List what you noticed in the report.

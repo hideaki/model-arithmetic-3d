@@ -12,7 +12,7 @@
 //
 // Settings, from the environment:
 //   ANTHROPIC_API_KEY   the key; if unset, it is taken from the settings file
-//   ASK_ENV_FILE        the settings file, default ~/.config/transformer-3d/.env
+//   ASK_ENV_FILE        the settings file, default ~/.config/model-arithmetic-3d/.env
 //   ADD_MODEL_MODEL     default claude-opus-5-5
 //   ADD_MODEL_PORT      the page server's port, default 5174
 
@@ -29,7 +29,7 @@ const ROOT = resolve(HERE, '../..');
 const MODEL = process.env.ADD_MODEL_MODEL || 'claude-opus-5-5';
 const PORT = Number(process.env.ADD_MODEL_PORT || 5174);
 const PAGE = `http://localhost:${PORT}`;
-const ENV_FILE = (process.env.ASK_ENV_FILE || '~/.config/transformer-3d/.env').replace(/^~/, homedir());
+const ENV_FILE = (process.env.ASK_ENV_FILE || '~/.config/model-arithmetic-3d/.env').replace(/^~/, homedir());
 
 // What the agent may do without asking. A path that starts with one slash is
 // relative to the project folder. Reading inside the project needs no rule.
@@ -47,7 +47,7 @@ const ALLOWED = [
   'mcp__playwright__*',
 ];
 // Never, whatever the person answers.
-const DENIED = ['Read(~/.config/transformer-3d/**)', 'Edit(~/.config/transformer-3d/**)'];
+const DENIED = ['Read(~/.config/model-arithmetic-3d/**)', 'Edit(~/.config/model-arithmetic-3d/**)'];
 
 // What this program is, said to the agent. The skill was written for the Claude
 // desktop app; these lines cover the places where a terminal differs.
@@ -136,7 +136,7 @@ function agentEnv() {
 // file, or a shell command that prints the whole environment. This runs as a hook,
 // because commands the agent may run without asking never reach the person.
 const touchesKey = (input) =>
-  /\.config\/transformer-3d|ANTHROPIC_API_KEY|ASK_ENV_FILE/.test(JSON.stringify(input)) ||
+  /\.config\/model-arithmetic-3d|ANTHROPIC_API_KEY|ASK_ENV_FILE/.test(JSON.stringify(input)) ||
   /(^|[;&|(]\s*)(printenv|env|set|export\s+-p)\s*($|[;&|)>])/.test(String(input?.command ?? ''));
 const KEY_REFUSAL = 'This program does not let the agent near the API key or its file.';
 const keyGuard = async (hookInput) =>

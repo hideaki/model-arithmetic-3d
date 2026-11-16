@@ -17,7 +17,7 @@ node add-model.mjs "graph attention network (Veličković et al., 2018), one lay
 - With a model description, the program sends `/add-model <description>`. The agent researches, prints its proposal and stops. Type your answer at `you>`; one line, Enter to send. `quit` ends the run.
 - `--say "<text>"` sends any first message instead, for example to continue work on an existing page.
 
-It needs Node 18.14 or later, Google Chrome (for the agent's look at the page), and an Anthropic API key with credit. The key is taken from `ANTHROPIC_API_KEY`, or from the same settings file the question panel uses (`~/.config/transformer-3d/.env`). Calls are billed to that key, per token. The program prints a running cost estimate after every turn.
+It needs Node 18.14 or later, Google Chrome (for the agent's look at the page), and an Anthropic API key with credit. The key is taken from `ANTHROPIC_API_KEY`, or from the same settings file the question panel uses (`~/.config/model-arithmetic-3d/.env`). Calls are billed to that key, per token. The program prints a running cost estimate after every turn.
 
 ## What the agent may do
 

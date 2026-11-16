@@ -92,7 +92,7 @@ python3 -m venv .venv
 .venv/bin/python serve.py 5173
 ```
 
-Put the key in `~/.config/transformer-3d/.env` as a line `ANTHROPIC_API_KEY=...`. The top of `ask.py` explains the settings and why the file lives outside the project folder.
+Put the key in `~/.config/model-arithmetic-3d/.env` as a line `ANTHROPIC_API_KEY=...`. The top of `ask.py` explains the settings and why the file lives outside the project folder.
 
 ## Asking for a new model: two ways
 

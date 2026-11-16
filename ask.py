@@ -20,7 +20,7 @@ Settings, from the environment or, for the first three, from the settings file:
     ASK_EFFORT          low | medium | high | xhigh | max, default medium
     ASK_FAKE=1          no model is called: a stand-in follows directives in the
                         question, so the page can be tested without a key
-    ASK_ENV_FILE        where the settings file is, default ~/.config/transformer-3d/.env
+    ASK_ENV_FILE        where the settings file is, default ~/.config/model-arithmetic-3d/.env
 
 The settings file holds lines like ANTHROPIC_API_KEY=sk-ant-... . It lives outside
 the project folder on purpose: a file inside it would be handed out by any plain
@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ENV_FILE = Path(os.environ.get("ASK_ENV_FILE", "~/.config/transformer-3d/.env")).expanduser()
+ENV_FILE = Path(os.environ.get("ASK_ENV_FILE", "~/.config/model-arithmetic-3d/.env")).expanduser()
 
 
 def _load_settings():

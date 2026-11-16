@@ -217,7 +217,7 @@ Every compiled page has an **Ask about this page** panel under the step text. Th
 .venv/bin/python serve.py 5173
 ```
 
-The key is read from a settings file **outside the project**, `~/.config/transformer-3d/.env` (a line `ANTHROPIC_API_KEY=...`; `ASK_MODEL` and `ASK_EFFORT` may go there too; `ASK_ENV_FILE` names another file). It is kept out of the project folder because a plain `python3 -m http.server` started there would serve a `.env` to the whole local network, and out of the shell's environment because Claude Code bills a key it finds in `ANTHROPIC_API_KEY` instead of using the Claude plan. A value set in the environment still wins. The tests point `ASK_ENV_FILE` at a file that does not exist, so they never touch the real key. With the system `python3`, or with no key, the pages still work and the panel says what is missing. The launch entries `compiled-dev` (5174) and `ask-stand-in` (5175, stand-in model) both use `.venv`.
+The key is read from a settings file **outside the project**, `~/.config/model-arithmetic-3d/.env` (a line `ANTHROPIC_API_KEY=...`; `ASK_MODEL` and `ASK_EFFORT` may go there too; `ASK_ENV_FILE` names another file). It is kept out of the project folder because a plain `python3 -m http.server` started there would serve a `.env` to the whole local network, and out of the shell's environment because Claude Code bills a key it finds in `ANTHROPIC_API_KEY` instead of using the Claude plan. A value set in the environment still wins. The tests point `ASK_ENV_FILE` at a file that does not exist, so they never touch the real key. With the system `python3`, or with no key, the pages still work and the panel says what is missing. The launch entries `compiled-dev` (5174) and `ask-stand-in` (5175, stand-in model) both use `.venv`.
 
 **Guards.** The server listens on 127.0.0.1 only. `/ask` accepts only JSON, and only from its own pages (a JSON content type cannot be sent from another site without a preflight, and the `Origin` must match), so another web page cannot spend the key. Request size, message count and page-text size are capped. Answers are escaped before a small Markdown renderer runs, so nothing the model writes becomes HTML. None of this is enough for a public server: that needs sign-in or per-visitor limits.
 
@@ -229,7 +229,7 @@ The key is read from a settings file **outside the project**, `~/.config/transfo
 
 Also tested with the stand-in model in the browser (each tool, a failing tool, Stop, missing key) and in `test/ask.test.mjs`. Not tested: a refusal, an answer cut off by the token limit, a conversation long enough to restart, the transformer and YOLO pages with the real model, and what a question costs (estimated at a few cents on this model; the page description is about 10,000 tokens and is cached for five minutes).
 
-**The owner's key** is in `~/.config/transformer-3d/.env` (created by the owner 2026-11-14; never read it, check only its shape). If questions start failing with "the API key was rejected", the key has expired or was revoked, and a new one is needed.
+**The owner's key** is in `~/.config/model-arithmetic-3d/.env` (created by the owner 2026-11-14 as `~/.config/transformer-3d/.env`, and moved by the owner on 2026-11-15 when the project was renamed; never read it, check only its shape). If questions start failing with "the API key was rejected", the key has expired or was revoked, and a new one is needed.
 
 ## 7b. The authoring skill (2026-11-14)
 
