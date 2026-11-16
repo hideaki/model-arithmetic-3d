@@ -1,12 +1,12 @@
 # Handoff: 3D presentations of AI/ML arithmetic
 
-Written 2026-11-14, at the end of a long session, and updated later the same day when the third model was started (section 7) when the authoring skill and a fourth model were added (sections 7 and 7b), and when a fifth model was added as the skill's second test, for whoever picks this up next (a new Claude session or a person). It covers what the project is, the rules the owner has set, how the code is organised, what is finished, what is not, and how to check work.
+Written 2026-11-14, at the end of a long session, and updated later the same day when the third model was started (section 7) when the authoring skill and a fourth model were added (sections 7 and 7b), and when a fifth model was added as the skill's second test, and on 2026-11-15 when a sixth (a graph attention network) was added through the skill run from a terminal, for whoever picks this up next (a new Claude session or a person). It covers what the project is, the rules the owner has set, how the code is organised, what is finished, what is not, and how to check work.
 
 ## 1. What this is
 
 An interactive 3D page that shows **exactly how a model computes**: every number is one cube, every tensor carries its shape, and hovering a cube lights up the numbers it was computed from.
 
-It started as one hand-built page for a transformer. It is now a **compiler**: a model is written once as a short program in a small tensor language, and the positions, arrows, camera views, step text, hover highlights and checks are derived from it. Five models exist: a two-block GPT-style transformer, a YOLOv3-style detector, a Stable Diffusion v1-style text-to-image model, from prompt to picture (in progress: its weights are still random, so the picture shows nothing), a one-layer LSTM language model, and a two-layer graph convolutional network.
+It started as one hand-built page for a transformer. It is now a **compiler**: a model is written once as a short program in a small tensor language, and the positions, arrows, camera views, step text, hover highlights and checks are derived from it. Six models exist: a two-block GPT-style transformer, a YOLOv3-style detector, a Stable Diffusion v1-style text-to-image model, from prompt to picture (in progress: its weights are still random, so the picture shows nothing), a one-layer LSTM language model, a two-layer graph convolutional network, and one layer of a graph attention network.
 
 The owner's longer-term aim is a system driven in natural language ("show me how X works", optionally with links to papers). An agent would research, propose a plan, write the program and its prose, and fix failures; the compiler stays the deterministic back end. The first piece of that agent layer exists: a repository skill, `.claude/skills/add-model/SKILL.md`, which carries the workflow and was used twice, to add the LSTM and the graph convolutional network (section 7b). Before that, Claude played the role by hand.
 
@@ -30,9 +30,9 @@ These came out of explicit decisions and corrections. Treat them as requirements
 ## 3. How to run and check
 
 ```bash
-npm test                    # 86 tests, about 6 seconds
+npm test                    # 91 tests, about 6 seconds
 npm run describe            # prints the transformer's derived step list
-PROGRAM=sd npm run describe # ... or another program's (yolo, sd, lstm, gcn)
+PROGRAM=sd npm run describe # ... or another program's (yolo, sd, lstm, gcn, gat)
 python3 serve.py 5173       # no-cache static server
 ```
 
@@ -43,6 +43,7 @@ Pages:
 - `compiled.html?program=sd` : the Stable Diffusion-style denoising loop, from the compiler
 - `compiled.html?program=lstm` : the LSTM language model, from the compiler
 - `compiled.html?program=gcn` : the graph convolutional network, from the compiler
+- `compiled.html?program=gat` : the graph attention network, from the compiler
 - `index.html` : the original hand-written transformer, kept as the reference
 
 There is no build step and no dependencies to install. Three.js r0.170 loads from a CDN through an import map. The project has been a git repository since 2026-11-15 (branch `main`, no remote); everything before that date is one first commit. `.venv/`, `node_modules/` and settings files are ignored.
@@ -53,12 +54,12 @@ There is no build step and no dependencies to install. Three.js r0.170 loads fro
 |---|---|---|
 | `lang/core.js` | 449 | Axes, tensors, program, sources (`param`, `input`, `toggle`, `departure`), structure (`section`, `step`, `repeat`, `part`), prose entry points, compile-time checks |
 | `lang/ops.js` | 606 | Operations, grouped by family (see section 5) |
-| `lang/expr.js` | 146 | Formula parser used by `map`; drives both arithmetic and displayed formulas |
+| `lang/expr.js` | 148 | Formula parser used by `map`; drives both arithmetic and displayed formulas |
 | `lang/prose.js` | 143 | Author prose: tagged templates, references, lint, rendering, `picture` |
 | `lang/check.js` | 95 | Verifies declared sources by perturbing every input cell |
 | `lang/explain.js` | 109 | Generated explanation of one cell (plain data) |
 | `lang/layout.js` | 245 | Derived positions for every tensor |
-| `lang/scene.js` | 730 | `compile(program)`: everything the runtime needs |
+| `lang/scene.js` | 732 | `compile(program)`: everything the runtime needs |
 | `runtime/viz.js` | 1175 | Model-agnostic 3D runtime (Three.js) |
 | `runtime/main.js` | 232 | Page shell: step bar, panel, controls, inspector |
 | `runtime/ask.js` | 199 | The question panel: the conversation, one round per POST to `/ask`, running the tools, rendering answers |
@@ -72,7 +73,8 @@ There is no build step and no dependencies to install. Three.js r0.170 loads fro
 | `programs/sd.js` | 1274 | The Stable Diffusion-style program: text, noise, three sampling steps and the decoder |
 | `programs/lstm.js` | 345 | The LSTM program: four time steps with shared weights, then the prediction |
 | `programs/gcn.js` | 294 | The graph convolutional network: the graph scaled once, the features, two layers |
-| `test/*.test.mjs` | 2287 | Eleven test files |
+| `programs/gat.js` | 322 | The graph attention network: the graph and its mask, the features per head, attention scores, the weighted sum |
+| `test/*.test.mjs` | 2516 | Twelve test files |
 | `.claude/skills/add-model/SKILL.md` | 143 | The authoring skill: how to add a model (section 7b) |
 | `tools/describe.mjs` | 36 | Prints steps, shapes and one cell's explanation; `PROGRAM=name` picks the program |
 | `examples/agent-sdk/` | 293 | An example only: the skill run from a terminal through the Claude Agent SDK (section 7b). Has its own `package.json` and `node_modules`; nothing else uses it |
@@ -91,7 +93,7 @@ A program is ordinary JavaScript run inside `program(...)`. Read `programs/yolo.
 | Family | An output cell comes from | Operations |
 |---|---|---|
 | rearrange | exactly one input cell | `lookup`, `rows`, `transpose`, `split`, `merge`, `channels`, `columns`, `again`, `reshape`, `flatten`, `unflatten`, `upsample`, `concat` |
-| map | the same-position cell of each operand, with broadcasting | `map(formula, operands)`, `add`, `gelu`, `sigmoid`, `silu` |
+| map | the same-position cell of each operand, with broadcasting | `map(formula, operands)`, `add`, `gelu`, `sigmoid`, `silu`; formula functions include `mask(a)` (0 where a > 0, −∞ elsewhere) |
 | reduce | every cell along one axis, or every cell of a group of channels | `mean`, `sum`, `std`, `softmax`, `groupMean`, `groupStd` |
 | contract | a row and a column, or a window and a filter | `matmul`, `conv2d` |
 | const | nothing | `causalMask`, `constant` |
@@ -131,7 +133,7 @@ Rank-3 tensors are drawn as slabs. **Heads stand far apart; channels are declare
 
 Manual hints: `.hint({ side: 'below' })` on a tensor, `.hint({ place: 'flow' })` to keep a transposed operand in the flow instead of beside the result, `.hint({ show: 'image' | 'prob' })` for colouring, `.hint({ frame: 'operands' })` on a result so that the step's camera view takes in all of its operands, however far back they stand (otherwise only those within 40 columns are framed), and `.hint({ arrows: 'all' })` on a result of a cell-by-cell formula so that every operand gets an arrow into it (otherwise only the nearest operand does, plus the one on the result's own lane when the nearest came in from a side lane).
 
-## 7. State of the five models
+## 7. State of the six models
 
 **Transformer** (`compiled.html`): 80 tensors, 8,784 cubes, 25 steps. Tests prove the compiled version matches the hand-written app cube for cube: numbers bit for bit (causal mask on and off), shapes, step and section of every tensor, and hover sources. All steps and tensors have authored prose, ported and adapted from the hand-written app.
 
@@ -180,6 +182,20 @@ Declared departures: untrained; tiny sizes; inference only (no dropout, no loss,
 
 What it added to the compiler, each approved by the owner: the operation `sum(X, { axis })` in the reduce family (the total of each line; the line lights up), with its line of PyTorch and its sentence in `lang/scene.js` and its per-cell explanation in `lang/explain.js`; and a change to the source checker. `lang/check.js` nudges every input cell by a fixed amount and expects the output to move, and ReLU of a number well below zero does not move, so it reported the true sources of a ReLU as unused. This was the first page with plain ReLU (the others use GELU, leaky ReLU, SiLU, sigmoid, tanh). Before calling a listed source unused, the checker now tries the same cell with its sign flipped. A source that is listed and truly unused is still caught (`test/lang.test.mjs`). The other pages draw and read as before. Nothing in `runtime/` was changed.
 
+**Graph attention network** (`compiled.html?program=gat`): 21 drawn tensors, 1,136 cubes (1,024 computed numbers plus two `again` copies), 15 steps. Added 2026-11-15 through the skill, run from a terminal with the Claude Agent SDK (section 7b); the owner chose the paper's hidden layer over its output layer and approved the outline. The model is one layer of Veličković et al. (2018), equations 1 to 5: K heads joined side by side, then ELU; the heads' weight tables held as one table split into heads and the attention vector a held as its halves a₁ and a₂, as PyG's `GATConv` does. The research was from memory (paper, the authors' TensorFlow code, PyG), not read in that session.
+
+- **The example**: the graph and words of the GCN page (8 papers, 9 links, 6 words), so the two pages can be compared; the features enter already divided by their row totals. 2 heads of 3 numbers.
+- **Graph** (3 steps): A; Ã = A + I; the mask M = mask(Ã), 0 where linked and −∞ elsewhere (cubes: the mask comes from the input).
+- **Transform** (3 steps): X; X · W (6 × 6); split into two heads Wh (2, 8, 3).
+- **Attention scores** (4 steps): s = Wh a₁ and t = Wh a₂ (2, 8, 1), tᵀ; e = max(s + tᵀ, 0.2 · (s + tᵀ)), arrows from both; M brought in with `again` on a side lane, ẽ = e + M; α = softmax(ẽ), unlinked cells drawn blocked.
+- **Weighted sum** (3 steps): Wh brought in again (beside H), H = α Wh; heads merged to (8, 6); ELU, written as `relu(x) + exp(−relu(−x)) − 1` so that its generated PyTorch line is valid.
+
+Tests recompute every number with independently written loops (e from the paper's form aᵀ[Wh_i ‖ Wh_j], softmax over each node's list of neighbours rather than with the mask), check the static-attention ordering the prose states, and check the highlight of every cube and that α is blocked exactly where there is no link.
+
+Declared departures: untrained; tiny sizes; one layer; inference only (no dropout); no bias; dense table with a −∞ mask (PyG scores only along links; the authors' code uses −10⁹); features prepared beforehand; no drawing of the graph.
+
+What it added to the compiler, approved by the owner after asking why: the formula function `mask(a)` in `lang/expr.js` (0 where a > 0, −∞ elsewhere) and its PyTorch line `torch.where(a > 0, 0.0, float('-inf'))` in `lang/scene.js`. The alternatives were `log(Ã)` (exact, but its generated code line is not PyTorch and it is a trick) and `−10⁹ · (1 − Ã)` (the authors' code, but it washes out the colour scale and is not drawn as blocked). The other pages draw and read as before. Nothing in `runtime/` was changed.
+
 ## 7a. Questions from the viewer (prototype, 2026-11-14)
 
 Every compiled page has an **Ask about this page** panel under the step text. The owner chose the route "API key and a small server" over publishing as a Claude artifact or running Claude Code locally (see the comparison in project memory).
@@ -225,9 +241,11 @@ It carries the rules of section 2, and a rule for what the compiler cannot draw:
 
 **The one test so far** was the LSTM. Followed as written, it produced a page that compiled on the first run and needed one approved compiler addition. Following it also showed where it was unclear, and it was revised: what to read to judge the compiler's limits; that creation order decides the layout; how prose works in a repeat shown briefly; how many clock ticks a screenshot needs; to collect gaps found late and ask once. The gaps that belong to the compiler, not to the skill, are in section 8.
 
+**The third run** (2026-11-15) added the graph attention network from a terminal through the Agent SDK program, with the owner at the terminal: proposal, the owner's choices, a program that compiled on its first run with no prose warnings, one approved compiler addition (section 7), tests and a look at all 15 steps. This was the first run of the skill itself through `examples/agent-sdk/`.
+
 **The second test** was the graph convolutional network, by a fresh session that was given the skill and nothing else, and told not to edit it. The skill got that session through research, a proposal with both expected gaps named before any code (no sum along an axis; a graph's dots and lines), a program that compiled on its first run with no prose warnings, the tests and a look at all 15 steps. It did not prepare the session for three things found after the proposal: the source checker rejecting plain ReLU (fixed with the owner's approval, section 7), operands whose arrow is dropped, and the overview hiding Â (both left as recorded limits, section 8). The owner was asked twice: the proposal, and those three together. The session's list of where the skill was unclear or silent is in the notes of that group of sessions (`skill-test-2-findings.md`); the skill itself has not been revised from it yet.
 
-**Outside the desktop app (2026-11-15).** `examples/agent-sdk/add-model.mjs` runs the same skill from a terminal through the Claude Agent SDK, to show that the authoring loop does not depend on the app. The skill is loaded unchanged; the program adds a headless browser for step 6, a page server if none is running, and an approval prompt for everything outside a short allowed list (so a change under `lang/` cannot be made without the owner's `y`). Its `README.md` has the commands and the limits. Checked with three small runs against the real API: start-up, the approval prompt and a typed refusal, the refusal of anything that names the key, and the headless browser opening a page of this project. **Not checked: a run of the skill itself.** No model has been added through it yet; that needs the owner at the terminal. One trap: run from a terminal inside Claude Code or the desktop app, an Agent SDK program inherits `CLAUDE_CODE_ENTRYPOINT=claude-desktop`, and the API then refuses every request made with an API key (400, "Your credit balance is too low", whatever the balance). The program leaves the session's `CLAUDE…` variables out.
+**Outside the desktop app (2026-11-15).** `examples/agent-sdk/add-model.mjs` runs the same skill from a terminal through the Claude Agent SDK, to show that the authoring loop does not depend on the app. The skill is loaded unchanged; the program adds a headless browser for step 6, a page server if none is running, and an approval prompt for everything outside a short allowed list (so a change under `lang/` cannot be made without the owner's `y`). Its `README.md` has the commands and the limits. Checked with three small runs against the real API: start-up, the approval prompt and a typed refusal, the refusal of anything that names the key, and the headless browser opening a page of this project. A run of the skill itself was done on 2026-11-15: the graph attention network (section 7). One trap: run from a terminal inside Claude Code or the desktop app, an Agent SDK program inherits `CLAUDE_CODE_ENTRYPOINT=claude-desktop`, and the API then refuses every request made with an API key (400, "Your credit balance is too low", whatever the balance). The program leaves the session's `CLAUDE…` variables out.
 
 **What the skill cannot do.** It does not make a model drawable that the compiler cannot draw: it only says so. The owner still has to answer the proposal, and nothing checks the prose for truth.
 
@@ -242,6 +260,7 @@ It carries the rules of section 2, and a rule for what the compiler cannot draw:
 - **An operand on the result's own lane gets no arrow when another tensor stands between.** With `arrows: 'all'`, an operand on a different lane always gets its arrow, but one on the same lane is skipped if anything is in between (`clear` in `lang/scene.js`), since the arrow would run through it. On the graph network page Â = Ã × s × sᵀ has an arrow from sᵀ only, though Ã is the operand that matters most, and X = X₀ / r has one from r only. Nothing in the program can move d, s and sᵀ off the lane. Hover and the generated sentence are right.
 - **GCN: the folded overview does not show Â entering the layers.** The same limit as the LSTM's cell state below: one tensor is handed from box to box. Here it hides the model's main structure, the same graph used in both layers; the overview reads as one line Graph → Features → Layer 1 → Layer 2.
 - **GCN: the graph is not drawn as dots and lines.** A display that is not a tensor, like YOLO's boxes. The owner chose to leave it out, declared as a departure (2026-11-14).
+- **GAT: looked at once.** All 15 steps viewed at 1280 x 800 with the clock stepped by hand; three cubes pinned without a mouse. Rough spots: the steps with both heads (7 to 12) are wide views with small cubes; in step 6 and step 12 a folded neighbouring box stands in front of a slab (head 1's Wh, α); the merge label reads "K·F′ = K·F′" because the joined axis's symbol is already the product; "head axis: K = 2" touches H's shape line in steps 11 and 12. The folded overview does not show M entering the scores box (the one-stream limit above).
 - **GCN: looked at once.** All 15 steps were viewed at 1280 x 800 with the clock stepped by hand; eight cubes were pinned without a mouse and one highlight was looked at. Not viewed in real time, not at phone width.
 
 - **Viewer questions: three real answers seen, all good, but that is a small sample** (section 7a). The rules in `runtime/ask-system.md` are a first draft the owner has not reviewed. A conversation is lost on reload. The model cannot yet change the Focus control on its own or rerun the model with a changed number.
@@ -298,6 +317,7 @@ On 2026-11-14 the owner said the compiler is good enough for now and turned to t
 6. **A tiny trained checkpoint for Stable Diffusion**, so the picture shows the prompt. Needs checkpoint loading in the language and a way to train (PyTorch is not installed; NumPy is).
 7. Draw YOLO's predicted boxes on the picture, and the graph convolutional network's graph as dots and lines: both need a display that is not a tensor. Fix label crowding in YOLO's decoding steps.
 8. Make tensor names in the prose interactive (hover a name, outline the tensor).
+9. Graph attention network: check its arithmetic against the paper and PyG's `GATConv` source (the research for it was from memory), ideally with the number check of item 3.
 
 When adding a model, use the skill (`.claude/skills/add-model/SKILL.md`): propose the variant, toy sizes, step outline and departures first, get a decision, then write the program.
 
