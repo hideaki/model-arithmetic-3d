@@ -1,10 +1,12 @@
 # model-arithmetic-3d
 
-Interactive 3D pages that show exactly how a machine-learning model computes. Every number is one cube, every tensor carries its shape, and pointing at a cube lights up the numbers it was computed from.
+A generator of interactive 3D pages that show exactly how a machine-learning model computes. You describe a model as a short program, or ask an AI agent to write one, and a compiler produces the page: every number is one cube, every tensor carries its shape, and pointing at a cube lights up the numbers it was computed from.
 
 ![A graph convolutional network page with one cube pinned: a row of one table and a column of another light up, and the panel lists the eight products that add up to the cube's value](docs/images/gcn-pinned-cube.png)
 
-The pages are not drawn by hand. A model is written once as a short program in a small tensor language, and a compiler derives the rest from it: positions, arrows, camera views, the text of each step, the highlight of every cube, and the checks.
+No page is drawn by hand. From the program, written in a small tensor language, the compiler derives the rest: positions, arrows, camera views, the text of each step, the highlight of every cube, and the checks. The six pages below are what it has generated so far.
+
+The generator is not finished, and is not meant to be. Every new model so far has needed something the compiler could not yet draw, so the agent that adds a model may also extend the compiler, with a person's approval. [More on this below.](#it-grows-with-every-model)
 
 ## The models
 
@@ -146,6 +148,28 @@ It is an example, not a product: one answer per line, no way to resume a convers
 | Paid by | your Claude Code account, usually a Claude plan | the API key, per token |
 | What the agent may do | Claude Code's permission settings | a list in `add-model.mjs`; the rest needs your yes |
 | Models added so far | LSTM, graph convolutional network | graph attention network |
+
+## It grows with every model
+
+Every model added so far needed something the compiler did not have. The first two, added by hand, needed a lot. The three added by the agent needed one or two small things each:
+
+| Model | What the compiler gained |
+|---|---|
+| YOLO | convolution, filter banks with four axes, channel slicing, constants set by a rule |
+| Stable Diffusion | reusing a tensor in a later section, shared weights, running part of a program again without drawing it, and a dozen operations |
+| LSTM | `columns`: taking some columns out of a table |
+| Graph convolutional network | `sum` along an axis, and a fix to the checker of highlights, which wrongly rejected ReLU |
+| Graph attention network | `mask`: an attention mask made from a table of links |
+
+So the agent is allowed to change the compiler it runs on, and the procedure says how:
+
+- **It sorts every piece of the model first**: the compiler can draw it now, it needs a small addition, or it cannot be drawn.
+- **A small addition needs the person's approval**, with the reason and the alternatives. It must be covered by a test, and the tests of every existing page must still pass.
+- **What cannot be drawn is said, not faked.** A graph's dots and lines, for example, are not on either graph page; both pages say so.
+
+The procedure changes too, more slowly. What a run shows to be unclear or missing in the skill is written down afterwards. The skill was revised that way after its first run; the findings of the second are recorded and not yet applied. The agent does not rewrite the procedure in the middle of a run.
+
+This is a small sample, five models, and the trend may not hold. But it is the reason the project is a generator with an agent in front of it and not a fixed viewer: a tool that covered only today's models would stop being useful at the next one.
 
 ## Layout of the code
 
