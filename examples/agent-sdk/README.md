@@ -30,7 +30,7 @@ Without asking:
 
 Shell commands that only read (`ls`, `wc`, `grep` and the like) inside the project also run without asking; that is the SDK's own rule.
 
-Everything else is shown to you first: any other shell command, and any change to another file. So a change under `lang/` or `runtime/`, which the skill allows only with the owner's approval, cannot be made without your `y`. Your choices at the prompt are `y`, `a` (yes, and do not ask again for this kind of call during this run), `n`, or a sentence saying what to do instead, which is passed to the agent.
+Everything else is shown to you first: any other shell command, and any change to another file. So an edit under `lang/` or `runtime/`, which the skill allows only with the owner's approval, is shown to you and waits for your `y`. (This covers the agent's edit tools. See the first limit below for what it does not cover.) Your choices at the prompt are `y`, `a` (yes, and do not ask again for this kind of call during this run), `n`, or a sentence saying what to do instead, which is passed to the agent.
 
 Never, whatever you answer: reading the settings file that holds the key, any call that names the key, and a shell command that prints the whole environment. A hook refuses these before any other rule is looked at.
 
@@ -42,6 +42,7 @@ Never, whatever you answer: reading the settings file that holds the key, any ca
 
 ## Limits
 
+- The approval prompt is not a sandbox. The agent may write files under `programs/` and `test/` and run them (`npm test`, `describe`) without asking, and code that runs can change any file or read the environment. An agent following the skill has no reason to do that, but nothing here prevents it. `git status` after a run shows every file that changed.
 - Shell commands the agent runs inherit this program's environment, which holds the key. The hook above is a guard against the plain ways of printing it, not a guarantee; read the commands you are asked to approve.
 - Started from a terminal inside Claude Code or the Claude desktop app, the program leaves that session's `CLAUDE…` variables out of what it hands to the agent. One of them, `CLAUDE_CODE_ENTRYPOINT=claude-desktop`, makes the API refuse every request made with an API key: HTTP 400, "Your credit balance is too low", whatever the balance is. Found on 2026-11-15 by trying each variable alone; the SDK's own value (`sdk-ts`) and `cli` are accepted, any other value tried was refused.
 - One line per answer. There is no way to paste a multi-line reply.
