@@ -635,6 +635,10 @@ button:focus-visible {
   max-height: 30vh;
   overflow-y: auto;
   display: grid;
+  /* One column that never grows wider than the panel, and words that break when they must:
+     a long path or name in a message would otherwise push every line past the right edge. */
+  grid-template-columns: minmax(0, 1fr);
+  overflow-wrap: anywhere;
   gap: 8px;
   align-content: start;
 }

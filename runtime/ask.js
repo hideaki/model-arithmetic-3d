@@ -55,7 +55,8 @@ export function markdown(text) {
 
 // What to tell the viewer for each way a round can fail. Server messages are shown as they are.
 const SAY = {
-  no_server: 'Questions need this project’s own server. Start it with <code>.venv/bin/python serve.py</code> and open the page from there.',
+  no_server:
+    'This server cannot answer questions. They are optional and need the project’s own server, <code>serve.py</code>, with the <code>anthropic</code> package and an API key: see “Asking about a page” in README.md. The rest of the page works without them.',
   cut_off: 'The answer was cut off before it finished. Ask again.',
   cancelled: '',
 };

@@ -130,7 +130,12 @@ def events(body):
     try:
         import anthropic
     except ImportError:
-        yield _error("no_sdk", "The server's Python has no 'anthropic' package. Start it with the project's own environment: .venv/bin/python serve.py")
+        yield _error(
+            "no_sdk",
+            "The server's Python has no 'anthropic' package. Questions are optional and need that package and an API key: "
+            "see \"Asking about a page\" in README.md. The rest of the page works without them. "
+            "If you have set this up already, start the server with .venv/bin/python serve.py",
+        )
         return
 
     global _client
