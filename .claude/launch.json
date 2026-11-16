@@ -29,6 +29,20 @@
         "5175"
       ],
       "port": 5175
+    },
+    {
+      "name": "site-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5176",
+        "--bind",
+        "127.0.0.1",
+        "--directory",
+        "_site"
+      ],
+      "port": 5176
     }
   ]
 }

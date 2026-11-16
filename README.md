@@ -37,7 +37,7 @@ You need Python 3 and a browser. Three.js is loaded from a CDN, so the first loa
 python3 serve.py 5173
 ```
 
-Then open `http://localhost:5173/compiled.html`, or any page from the table above.
+Then open `http://localhost:5173/models.html` for the list of models, or any page from the table above.
 
 On a page: the arrow buttons move through the steps, pointing at a cube shows where its value came from, and a click pins it and lists the arithmetic.
 
@@ -237,6 +237,8 @@ Either way, the agent sits in front of the compiler and writes what a person wou
 | `src/`, `index.html` | An earlier transformer page written by hand, kept because a test compares the compiled one with it |
 | `test/` | Tests: every number, every highlight, the layout |
 | `tools/describe.mjs` | Prints a program's derived steps |
+| `models.html` | The list of models, with a picture and a link for each |
+| `tools/build-site.mjs` | Collects the files a static host needs into one folder: the list as the front page, and the pages without the question panel |
 | `serve.py`, `ask.py` | The local server and the question panel's server side |
 | `examples/agent-sdk/` | The authoring skill outside Claude Code |
 | `HANDOFF.md` | Working notes: the rules of the project, the language in brief, the layout rules, each model's state, known problems and next steps |

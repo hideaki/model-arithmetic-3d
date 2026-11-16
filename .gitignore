@@ -16,3 +16,6 @@ __pycache__/
 
 # Screenshots the browser tools leave behind
 .playwright-mcp/
+
+# The static site, assembled by tools/build-site.mjs
+_site/

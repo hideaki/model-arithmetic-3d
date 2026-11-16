@@ -1,0 +1,40 @@
+# Publishes the pages as a static site on GitHub Pages.
+#
+# OFF FOR NOW: it runs only when started by hand, and it fails until Pages is
+# switched on for the repository (Settings > Pages > Source: GitHub Actions).
+# A Pages site is public even when the repository is private, so it is to be
+# switched on when the repository is made public. HANDOFF.md section 3 lists
+# the steps, the last of which adds "push" to the triggers below.
+name: pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm test
+      - run: node tools/build-site.mjs _site
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v5

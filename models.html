@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How models compute, one cube per number</title>
+    <link rel="icon" href="data:," />
+    <!-- The list of models. Opened as models.html from the project's own server, and
+         published as the front page (index.html) of the static site: see tools/build-site.mjs.
+         One card per file in programs/; test/site.test.mjs checks the list and the counts. -->
+    <style>
+      :root {
+        --bg: #0b0e14;
+        --card: #10141d;
+        --line: #1f2634;
+        --line-2: #2b3445;
+        --text: #e6ebf5;
+        --dim: #97a4bc;
+        --accent: #ffb454;
+        --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      main {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 56px 24px 72px;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 30px;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+      }
+      p {
+        margin: 0 0 12px;
+        max-width: 68ch;
+      }
+      .lead {
+        color: var(--dim);
+      }
+      a {
+        color: var(--accent);
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+        gap: 20px;
+        margin: 36px 0 40px;
+        padding: 0;
+        list-style: none;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--card);
+        color: inherit;
+        text-decoration: none;
+        overflow: hidden;
+        transition: border-color 0.15s, transform 0.15s;
+      }
+      .card:hover,
+      .card:focus-visible {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+        outline: none;
+      }
+      .card img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        object-fit: cover;
+        background: #080a0f;
+        border-bottom: 1px solid var(--line);
+      }
+      .card .text {
+        padding: 14px 16px 16px;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 17px;
+        line-height: 1.3;
+      }
+      .card .what {
+        margin: 0 0 10px;
+        color: var(--dim);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .card .size {
+        font: 500 12.5px var(--mono);
+        color: var(--accent);
+      }
+      .notes {
+        margin: 0;
+        padding: 0 0 0 20px;
+        max-width: 72ch;
+        color: var(--dim);
+        font-size: 15px;
+      }
+      .notes li {
+        margin-bottom: 6px;
+      }
+      .notes b {
+        color: var(--text);
+        font-weight: 600;
+      }
+      h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>How models compute, one cube per number</h1>
+      <p>
+        Six machine-learning models, each as an interactive 3D page. Every number is one cube, every table of numbers carries its shape, and
+        pointing at a cube lights up the numbers it was computed from.
+      </p>
+      <p class="lead">
+        No page is drawn by hand. Each one is compiled in your browser from a short program in a small tensor language. The project is
+        <a href="https://github.com/hideaki/model-arithmetic-3d">model-arithmetic-3d on GitHub</a>.
+      </p>
+
+      <ul class="cards">
+        <li>
+          <a class="card" href="compiled.html?program=transformer">
+            <img src="docs/images/thumbs/transformer.jpg" alt="" loading="lazy" />
+            <div class="text">
+              <h2>Transformer</h2>
+              <p class="what">A GPT-style language model with two blocks: attention, then a feed-forward layer, twice.</p>
+              <span class="size">8,784 cubes · 25 steps</span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="compiled.html?program=yolo">
+            <img src="docs/images/thumbs/yolo.jpg" alt="" loading="lazy" />
+            <div class="text">
+              <h2>YOLO detector</h2>
+              <p class="what">A YOLOv3-style object detector at one scale: convolutions down to a grid of box predictions.</p>
+              <span class="size">1,694 cubes · 13 steps</span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="compiled.html?program=sd">
+            <img src="docs/images/thumbs/sd.jpg" alt="" loading="lazy" />
+            <div class="text">
+              <h2>Stable Diffusion</h2>
+              <p class="what">A Stable Diffusion v1-style text-to-image model: text encoder, denoising U-Net and image decoder.</p>
+              <span class="size">24,350 cubes · 59 steps</span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="compiled.html?program=lstm">
+            <img src="docs/images/thumbs/lstm.jpg" alt="" loading="lazy" />
+            <div class="text">
+              <h2>LSTM</h2>
+              <p class="what">An LSTM language model over four time steps, with its gates and its cell state.</p>
+              <span class="size">1,617 cubes · 16 steps</span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="compiled.html?program=gcn">
+            <img src="docs/images/thumbs/gcn.jpg" alt="" loading="lazy" />
+            <div class="text">
+              <h2>Graph convolutional network</h2>
+              <p class="what">Two layers that classify the nodes of a small graph from their features and their links.</p>
+              <span class="size">604 cubes · 15 steps</span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a class="card" href="compiled.html?program=gat">
+            <img src="docs/images/thumbs/gat.jpg" alt="" loading="lazy" />
+            <div class="text">
+              <h2>Graph attention network</h2>
+              <p class="what">One layer in which every node weighs its neighbours by attention before taking them in.</p>
+              <span class="size">1,024 cubes · 15 steps</span>
+            </div>
+          </a>
+        </li>
+      </ul>
+
+      <h3>What to know before you look</h3>
+      <ul class="notes">
+        <li><b>On a page:</b> the arrow buttons move through the steps, pointing at a cube shows where its value came from, and a click pins it and lists the arithmetic.</li>
+        <li><b>The arithmetic is the model's own.</b> Sizes are shrunk so that every number fits on screen, but the calculation is not simplified. Each page lists what it leaves out.</li>
+        <li><b>The weights are random.</b> No model here is trained, so the pages show how the numbers flow, not what a trained model has learned.</li>
+        <li><b>Two pages are less finished than the rest:</b> Stable Diffusion runs on random weights, so its picture shows nothing, and the graph attention network has not been checked against its paper.</li>
+        <li><b>Best on a computer.</b> The pages are built for a wide screen and a mouse.</li>
+      </ul>
+    </main>
+  </body>
+</html>

@@ -32,7 +32,7 @@ These came out of explicit decisions and corrections. Treat them as requirements
 ## 3. How to run and check
 
 ```bash
-npm test                    # 91 tests, about 6 seconds
+npm test                    # 96 tests, about 6 seconds
 npm run describe            # prints the transformer's derived step list
 PROGRAM=sd npm run describe # ... or another program's (yolo, sd, lstm, gcn, gat)
 python3 serve.py 5173       # no-cache static server
@@ -47,8 +47,17 @@ Pages:
 - `compiled.html?program=gcn` : the graph convolutional network, from the compiler
 - `compiled.html?program=gat` : the graph attention network, from the compiler
 - `index.html` : the original hand-written transformer, kept as the reference
+- `models.html` : the list of the six models, with a picture and a link for each. **When a model is added, add its card here** (and its row in `README.md`); `test/site.test.mjs` fails until the list and the counts match `programs/`
 
-There is no build step and no dependencies to install. Three.js r0.170 loads from a CDN through an import map. The project has been a git repository since 2026-11-15 (branch `main`); everything before that date is one first commit. It was prepared for publishing the same day: `README.md`, an MIT `LICENSE`, and a GitHub workflow that runs `npm test`. It was pushed that evening to a **private** repository, `github.com/hideaki/model-arithmetic-3d` (remote `origin`), and the workflow's first run passed. Making the repository public is the owner's decision and has not been made. `.venv/`, `node_modules/` and settings files are ignored.
+There is no build step and no dependencies to install. Three.js r0.170 loads from a CDN through an import map. The project has been a git repository since 2026-11-15 (branch `main`); everything before that date is one first commit. It was prepared for publishing the same day: `README.md`, an MIT `LICENSE`, and a GitHub workflow that runs `npm test`. It was pushed that evening to a **private** repository, `github.com/hideaki/model-arithmetic-3d` (remote `origin`), and the workflow's first run passed. Making the repository public is the owner's decision and has not been made.
+
+**A static site is prepared and switched off (2026-11-15).** The pages need no server, so GitHub Pages can show them live. `node tools/build-site.mjs` collects what a static host needs into `_site/` (ignored by git): `models.html` as the front page, and `compiled.html` without the question panel, which a static host cannot serve. The `site-preview` entry in `.claude/launch.json` serves `_site/` on port 5176; the assembled site was looked at there once (front page, one model page, a pinned cube, no console errors). `.github/workflows/pages.yml` publishes it, but runs only when started by hand and **has never run**. It is off because a Pages site is public even when the repository is private, and a free account needs a public repository for Pages. To switch it on, when the owner makes the repository public:
+
+1. Repository Settings > Pages > Source: GitHub Actions.
+2. Start the `pages` workflow by hand once and open the address it prints. Check a model page under the sub-folder address (`.../model-arithmetic-3d/compiled.html?program=gcn`).
+3. Add `push: branches: [main]` to the workflow's triggers, and link the README's screenshots and model table to the live pages.
+
+The six pictures in `docs/images/thumbs/` are the 3D scene of one step of each page (transformer 6, yolo 2, sd 18, lstm 8, gcn 9, gat 10), 883 x 552, taken with headless Chrome with the title, legend and step bar hidden. `.venv/`, `node_modules/` and settings files are ignored.
 
 ## 4. Code map
 
@@ -76,10 +85,12 @@ There is no build step and no dependencies to install. Three.js r0.170 loads fro
 | `programs/lstm.js` | 345 | The LSTM program: four time steps with shared weights, then the prediction |
 | `programs/gcn.js` | 294 | The graph convolutional network: the graph scaled once, the features, two layers |
 | `programs/gat.js` | 322 | The graph attention network: the graph and its mask, the features per head, attention scores, the weighted sum |
-| `test/*.test.mjs` | 2516 | Twelve test files |
+| `test/*.test.mjs` | 2583 | Thirteen test files |
 | `.claude/skills/add-model/SKILL.md` | 143 | The authoring skill: how to add a model (section 7b) |
 | `README.md`, `docs/images/` | | The introduction for a visitor, and its two screenshots (taken with headless Chrome at 1280 x 800) |
 | `tools/describe.mjs` | 36 | Prints steps, shapes and one cell's explanation; `PROGRAM=name` picks the program |
+| `models.html`, `docs/images/thumbs/` | 213 | The list of models, written by hand and checked by `test/site.test.mjs`; the front page of the static site |
+| `tools/build-site.mjs` | 51 | Collects the static site into `_site/` (section 3) |
 | `examples/agent-sdk/` | 293 | An example only: the skill run from a terminal through the Claude Agent SDK (section 7b). Has its own `package.json` and `node_modules`; nothing else uses it |
 | `src/` | 3065 | The hand-written app. **Frozen reference; do not edit** except `src/style.css`, which both pages share |
 
