@@ -244,7 +244,7 @@ Also tested with the stand-in model in the browser (each tool, a failing tool, S
 
 ## 7b. The authoring skill (2026-11-14)
 
-`.claude/skills/add-model/SKILL.md` is a Claude Code project skill: any session opened in this folder can use it (`/add-model <model, links>`, or it is picked up when someone asks to show how a model works). It is the workflow that was done by hand for YOLO and Stable Diffusion, written down:
+`.claude/skills/add-model/SKILL.md` is a Claude Code project skill: any session opened in this folder can use it (`/add-model <model, links>`, or it is picked up when someone asks to show how a model works). It is the workflow that was followed for YOLO and Stable Diffusion, written down (those two were also written by an agent in Claude Code sessions, before there was a skill; "by hand" would be wrong):
 
 1. Research the model's exact arithmetic.
 2. Propose: variant, example input, toy sizes, step outline, departures, compiler gaps, what the viewer will not see.

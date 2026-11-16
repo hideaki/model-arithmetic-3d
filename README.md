@@ -105,7 +105,7 @@ What the agent does is written down once, in `.claude/skills/add-model/SKILL.md`
 3. Stop and wait for the person's decision.
 4. Write the program and its tests, look at every step in a browser, and report.
 
-When the compiler cannot draw something, the agent is told to say so and offer choices, never to fake it. The LSTM, the graph convolutional network and the graph attention network were added this way.
+When the compiler cannot draw something, the agent is told to say so and offer choices, never to fake it. The LSTM, the graph convolutional network and the graph attention network were added this way. YOLO and Stable Diffusion were added earlier, also in Claude Code and by the same steps, while the compiler was still being built and before the steps were written down as a skill.
 
 There are two ways to run that procedure. Both use the same skill file and the same compiler.
 
@@ -120,7 +120,7 @@ Open this folder in [Claude Code](https://claude.com/claude-code) and type:
 The agent researches, shows its proposal and waits for your answer. This is the way the project itself is developed, and the more useful of the two:
 
 - **It is a conversation.** Before approving a proposal you can ask what the model does, why a step is there, or what an alternative would cost.
-- **It does not end with the page.** The same session can fix a page, extend the compiler when a model needs a new operation, and commit the result.
+- **It does not end with the page.** The same session can fix a page, extend the compiler when a model needs a new operation, and commit the result. The compiler itself was written this way.
 - **It runs on whatever your Claude Code runs on**, for most people a Claude plan, with Claude Code's own permission prompts.
 
 ### 2. From a program of your own (an example)
@@ -149,11 +149,11 @@ It is an example, not a product: one answer per line, no way to resume a convers
 | You need | Claude Code | Node.js, Google Chrome, an Anthropic API key |
 | Paid by | your Claude Code account, usually a Claude plan | the API key, per token |
 | What the agent may do | Claude Code's permission settings | a list in `add-model.mjs`; the rest needs your yes |
-| Models added so far | LSTM, graph convolutional network | graph attention network |
+| Models added so far | YOLO and Stable Diffusion (before the skill was written), LSTM, graph convolutional network | graph attention network |
 
 ## It grows with every model
 
-Every model added so far needed something the compiler did not have. The first two, added by hand, needed a lot. The three added by the agent needed one or two small things each:
+Every model added so far needed something the compiler did not have. The first two were added while the compiler was still being built, and needed a lot. The three added since, with the written procedure, needed one or two small things each:
 
 | Model | What the compiler gained |
 |---|---|
