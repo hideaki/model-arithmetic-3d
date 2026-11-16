@@ -1,8 +1,9 @@
 {
-  "name": "attention-3d",
+  "name": "model-arithmetic-3d",
   "private": true,
   "type": "module",
-  "description": "Interactive 3D model of a one-block GPT-style transformer with exact tensor shapes",
+  "description": "Interactive 3D pages that show exactly how a model computes: one cube per number, compiled from a short program in a small tensor language",
+  "license": "MIT",
   "scripts": {
     "start": "python3 serve.py 5173",
     "test": "node --test",
