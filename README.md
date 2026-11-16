@@ -182,11 +182,11 @@ The system has four layers. Each one works without the ones below it in this tab
 | Compiler | `lang/` | Turns a program into a scene: numbers, positions, steps, text, highlights | Nothing. Plain JavaScript with no dependencies |
 | Page | `runtime/`, `compiled.html` | Draws a scene and lets you walk through it | A browser, Three.js from a CDN, any server that hands out files |
 | Question panel | `runtime/ask*.js`, `ask.py`, `serve.py` | Answers a viewer's questions about the page | `serve.py`, the `anthropic` package, an API key |
-| Authoring agent | `.claude/skills/add-model/`, `examples/agent-sdk/` | Writes a program from a request in plain language | Claude Code, or an API key |
+| Authoring agent | `.claude/skills/add-model/`, run by Claude Code or by `examples/agent-sdk/` | Writes a program from a request in plain language | Claude Code, or the example program with an API key |
 
 ```mermaid
 flowchart TD
-  request(["A request in plain language"]) --> agent["Authoring agent"]
+  request(["A request in plain language"]) --> agent["Authoring agent: the add-model skill, run by Claude Code or by the example program"]
   agent -->|writes| program["Program: programs/gcn.js"]
   program --> tensors
   subgraph compiler ["Compiler: lang/"]
@@ -218,7 +218,14 @@ The conversation lives in the page. Each round is one request to `serve.py`, whi
 
 ### The authoring agent
 
-The agent sits in front of the compiler and writes what a person would write: a program, and a test with an independent recalculation. It checks its work with the same tools as a person (`describe`, the tests, a look at the page in a browser). A change to the compiler itself needs a person's approval, as described [above](#it-grows-with-every-model).
+The agent is two things: a procedure and something that runs it. The procedure is one file, `.claude/skills/add-model/SKILL.md`. It can be run in two ways:
+
+- **Claude Code**, with `/add-model`. This is the main way, and the way the project itself is developed.
+- **The example program** in `examples/agent-sdk/`, built on the Claude Agent SDK. It shows that the same skill and compiler can be built into another application.
+
+Both read the same skill file and drive the same compiler; [the section above](#asking-for-a-new-model-two-ways) compares them.
+
+Either way, the agent sits in front of the compiler and writes what a person would write: a program, and a test with an independent recalculation. It checks its work with the same tools as a person (`describe`, the tests, a look at the page in a browser). A change to the compiler itself needs a person's approval, as described [above](#it-grows-with-every-model).
 
 ## Layout of the code
 
