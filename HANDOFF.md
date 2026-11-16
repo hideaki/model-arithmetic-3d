@@ -1,5 +1,7 @@
 # Handoff: 3D presentations of AI/ML arithmetic
 
+These are the project's working notes, kept for whoever continues the work, a person or an AI agent. For an introduction, read `README.md` first. "The owner" in these notes is the project's author, who makes the decisions the agents are told to wait for.
+
 Written 2026-11-14, at the end of a long session, and updated later the same day when the third model was started (section 7) when the authoring skill and a fourth model were added (sections 7 and 7b), and when a fifth model was added as the skill's second test, and on 2026-11-15 when a sixth (a graph attention network) was added through the skill run from a terminal, for whoever picks this up next (a new Claude session or a person). It covers what the project is, the rules the owner has set, how the code is organised, what is finished, what is not, and how to check work.
 
 ## 1. What this is
@@ -8,7 +10,7 @@ An interactive 3D page that shows **exactly how a model computes**: every number
 
 It started as one hand-built page for a transformer. It is now a **compiler**: a model is written once as a short program in a small tensor language, and the positions, arrows, camera views, step text, hover highlights and checks are derived from it. Six models exist: a two-block GPT-style transformer, a YOLOv3-style detector, a Stable Diffusion v1-style text-to-image model, from prompt to picture (in progress: its weights are still random, so the picture shows nothing), a one-layer LSTM language model, a two-layer graph convolutional network, and one layer of a graph attention network.
 
-The owner's longer-term aim is a system driven in natural language ("show me how X works", optionally with links to papers). An agent would research, propose a plan, write the program and its prose, and fix failures; the compiler stays the deterministic back end. The first piece of that agent layer exists: a repository skill, `.claude/skills/add-model/SKILL.md`, which carries the workflow and was used twice, to add the LSTM and the graph convolutional network (section 7b). Before that, Claude played the role by hand.
+The owner's longer-term aim is a system driven in natural language ("show me how X works", optionally with links to papers). An agent would research, propose a plan, write the program and its prose, and fix failures; the compiler stays the deterministic back end. The first piece of that agent layer exists: a repository skill, `.claude/skills/add-model/SKILL.md`, which carries the workflow and was used three times, to add the LSTM, the graph convolutional network and the graph attention network (section 7b). Before that, Claude played the role by hand.
 
 ## 2. Rules the owner has set
 
@@ -46,7 +48,7 @@ Pages:
 - `compiled.html?program=gat` : the graph attention network, from the compiler
 - `index.html` : the original hand-written transformer, kept as the reference
 
-There is no build step and no dependencies to install. Three.js r0.170 loads from a CDN through an import map. The project has been a git repository since 2026-11-15 (branch `main`, no remote); everything before that date is one first commit. `.venv/`, `node_modules/` and settings files are ignored.
+There is no build step and no dependencies to install. Three.js r0.170 loads from a CDN through an import map. The project has been a git repository since 2026-11-15 (branch `main`); everything before that date is one first commit. It was prepared for publishing the same day: `README.md`, an MIT `LICENSE`, and a GitHub workflow that runs `npm test` (not yet run, since nothing has been pushed). `.venv/`, `node_modules/` and settings files are ignored.
 
 ## 4. Code map
 
@@ -76,6 +78,7 @@ There is no build step and no dependencies to install. Three.js r0.170 loads fro
 | `programs/gat.js` | 322 | The graph attention network: the graph and its mask, the features per head, attention scores, the weighted sum |
 | `test/*.test.mjs` | 2516 | Twelve test files |
 | `.claude/skills/add-model/SKILL.md` | 143 | The authoring skill: how to add a model (section 7b) |
+| `README.md`, `docs/images/` | | The introduction for a visitor, and its two screenshots (taken with headless Chrome at 1280 x 800) |
 | `tools/describe.mjs` | 36 | Prints steps, shapes and one cell's explanation; `PROGRAM=name` picks the program |
 | `examples/agent-sdk/` | 293 | An example only: the skill run from a terminal through the Claude Agent SDK (section 7b). Has its own `package.json` and `node_modules`; nothing else uses it |
 | `src/` | 3065 | The hand-written app. **Frozen reference; do not edit** except `src/style.css`, which both pages share |
@@ -198,7 +201,7 @@ What it added to the compiler, approved by the owner after asking why: the formu
 
 ## 7a. Questions from the viewer (prototype, 2026-11-14)
 
-Every compiled page has an **Ask about this page** panel under the step text. The owner chose the route "API key and a small server" over publishing as a Claude artifact or running Claude Code locally (see the comparison in project memory).
+Every compiled page has an **Ask about this page** panel under the step text. The owner chose the route "API key and a small server" over publishing as a Claude artifact or running Claude Code locally (the comparison is in the author's project memory, which is not part of the repository).
 
 **How a question travels.** The page keeps the conversation. For each question it sends `POST /ask` with two things: a description of the whole page (model name, declared departures, every step, every tensor with id, shape and how it is made; about 27,000 characters for the Stable Diffusion page) and the messages so far. The newest message carries a `<view>` block: the step the viewer is on, in full, and the cube they pinned with the page's own explanation of it. `ask.py` adds the rules (`runtime/ask-system.md`) and the tools, calls the API with streaming, and relays one JSON object per line: words as they arrive, then the finished message. If the model called tools, the page runs them, appends the results and posts again, at most 6 rounds per question.
 
@@ -241,9 +244,9 @@ It carries the rules of section 2, and a rule for what the compiler cannot draw:
 
 **The one test so far** was the LSTM. Followed as written, it produced a page that compiled on the first run and needed one approved compiler addition. Following it also showed where it was unclear, and it was revised: what to read to judge the compiler's limits; that creation order decides the layout; how prose works in a repeat shown briefly; how many clock ticks a screenshot needs; to collect gaps found late and ask once. The gaps that belong to the compiler, not to the skill, are in section 8.
 
-**The third run** (2026-11-15) added the graph attention network from a terminal through the Agent SDK program, with the owner at the terminal: proposal, the owner's choices, a program that compiled on its first run with no prose warnings, one approved compiler addition (section 7), tests and a look at all 15 steps. This was the first run of the skill itself through `examples/agent-sdk/`.
-
 **The second test** was the graph convolutional network, by a fresh session that was given the skill and nothing else, and told not to edit it. The skill got that session through research, a proposal with both expected gaps named before any code (no sum along an axis; a graph's dots and lines), a program that compiled on its first run with no prose warnings, the tests and a look at all 15 steps. It did not prepare the session for three things found after the proposal: the source checker rejecting plain ReLU (fixed with the owner's approval, section 7), operands whose arrow is dropped, and the overview hiding Â (both left as recorded limits, section 8). The owner was asked twice: the proposal, and those three together. The session's list of where the skill was unclear or silent is in the notes of that group of sessions (`skill-test-2-findings.md`); the skill itself has not been revised from it yet.
+
+**The third run** (2026-11-15) added the graph attention network from a terminal through the Agent SDK program, with the owner at the terminal: proposal, the owner's choices, a program that compiled on its first run with no prose warnings, one approved compiler addition (section 7), tests and a look at all 15 steps. This was the first run of the skill itself through `examples/agent-sdk/`.
 
 **Outside the desktop app (2026-11-15).** `examples/agent-sdk/add-model.mjs` runs the same skill from a terminal through the Claude Agent SDK, to show that the authoring loop does not depend on the app. The skill is loaded unchanged; the program adds a headless browser for step 6, a page server if none is running, and an approval prompt for everything outside a short allowed list (so a change under `lang/` cannot be made without the owner's `y`). Its `README.md` has the commands and the limits. Checked with three small runs against the real API: start-up, the approval prompt and a typed refusal, the refusal of anything that names the key, and the headless browser opening a page of this project. A run of the skill itself was done on 2026-11-15: the graph attention network (section 7). One trap: run from a terminal inside Claude Code or the desktop app, an Agent SDK program inherits `CLAUDE_CODE_ENTRYPOINT=claude-desktop`, and the API then refuses every request made with an API key (400, "Your credit balance is too low", whatever the balance). The program leaves the session's `CLAUDE…` variables out.
 
@@ -323,4 +326,4 @@ When adding a model, use the skill (`.claude/skills/add-model/SKILL.md`): propos
 
 ## 11. Memory
 
-Claude's project memory for this folder holds the same goals and decisions in shorter form (two files: the project goal, and the compiler direction). A new session in this folder loads them automatically; this document is the fuller version.
+On the author's own machine, Claude's project memory holds the same goals and decisions in shorter form (two files: the project goal, and the compiler direction), and a new Claude Code session there loads them automatically. That memory is not part of the repository; this document is the fuller version and is enough by itself.
