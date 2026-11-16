@@ -17,6 +17,8 @@ export const gelu = (x) => x * phi(x);
 export const FUNCS = {
   sqrt: Math.sqrt, exp: Math.exp, log: Math.log, tanh: Math.tanh, abs: Math.abs,
   relu: (x) => Math.max(0, x), sigmoid: (x) => 1 / (1 + Math.exp(-x)), max: Math.max, min: Math.min, phi, gelu,
+  // An attention mask made from a table of links: 0 where there is a link, −∞ where there is none.
+  mask: (x) => (x > 0 ? 0 : -Infinity),
 };
 
 const TOKEN = /\s*(?:(\d+(?:\.\d+)?(?:e[-+]?\d+)?)|([\p{L}_][\p{L}\p{N}_]*)|([-+*/^(),]))/iuy;

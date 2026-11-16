@@ -76,7 +76,9 @@ function pyExpr(ast, sub) {
       case 'group': return `(${go(n.a)})`;
       case 'var': return sub(n.name) ?? n.name;
       case 'neg': return `-${go(n.a)}`;
-      case 'call': return `${{ sqrt: 'math.sqrt', gelu: 'F.gelu', relu: 'F.relu', exp: 'torch.exp', tanh: 'torch.tanh', sigmoid: 'torch.sigmoid', max: 'torch.maximum', min: 'torch.minimum' }[n.name] || n.name}(${n.args.map(go).join(', ')})`;
+      case 'call':
+        if (n.name === 'mask') return `torch.where(${go(n.args[0])} > 0, 0.0, float('-inf'))`;
+        return `${{ sqrt: 'math.sqrt', gelu: 'F.gelu', relu: 'F.relu', exp: 'torch.exp', tanh: 'torch.tanh', sigmoid: 'torch.sigmoid', max: 'torch.maximum', min: 'torch.minimum' }[n.name] || n.name}(${n.args.map(go).join(', ')})`;
       default: return `${go(n.a)} ${n.op === '^' ? '**' : n.op} ${go(n.b)}`;
     }
   };
