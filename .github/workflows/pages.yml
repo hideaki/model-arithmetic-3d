@@ -1,13 +1,13 @@
-# Publishes the pages as a static site on GitHub Pages.
+# Publishes the pages as a static site on GitHub Pages, on every push to main:
+# https://hideaki.github.io/model-arithmetic-3d/
 #
-# OFF FOR NOW: it runs only when started by hand, and it fails until Pages is
-# switched on for the repository (Settings > Pages > Source: GitHub Actions).
-# A Pages site is public even when the repository is private, so it is to be
-# switched on when the repository is made public. HANDOFF.md section 3 lists
-# the steps, the last of which adds "push" to the triggers below.
+# The tests run first, so a push that breaks them is not published.
+# Needs Pages switched on for the repository (Settings > Pages > Source: GitHub Actions).
 name: pages
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:

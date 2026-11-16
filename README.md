@@ -2,7 +2,9 @@
 
 A generator of interactive 3D pages that show exactly how a machine-learning model computes. You describe a model as a short program, or ask an AI agent to write one, and a compiler produces the page: every number is one cube, every tensor carries its shape, and pointing at a cube lights up the numbers it was computed from.
 
-![A graph convolutional network page with one cube pinned: a row of one table and a column of another light up, and the panel lists the eight products that add up to the cube's value](docs/images/gcn-pinned-cube.png)
+**[See the six pages live](https://hideaki.github.io/model-arithmetic-3d/)**, in your browser, with nothing to install.
+
+[![A graph convolutional network page with one cube pinned: a row of one table and a column of another light up, and the panel lists the eight products that add up to the cube's value](docs/images/gcn-pinned-cube.png)](https://hideaki.github.io/model-arithmetic-3d/compiled.html?program=gcn#9)
 
 No page is drawn by hand. From the program, written in a small tensor language, the compiler derives the rest: positions, arrows, camera views, the text of each step, the highlight of every cube, and the checks. The six pages below are what it has generated so far.
 
@@ -10,16 +12,16 @@ The generator is not finished, and is not meant to be. Every new model so far ha
 
 ## The models
 
-| Page | Model | Size |
+| Page (the link opens it live) | Model | Size |
 |---|---|---|
-| `compiled.html` | GPT-style transformer, two blocks | 8,784 cubes, 25 steps |
-| `compiled.html?program=yolo` | YOLOv3-style detector, one scale | 1,694 cubes, 13 steps |
-| `compiled.html?program=sd` | Stable Diffusion v1-style text-to-image model | 24,350 cubes, 59 steps |
-| `compiled.html?program=lstm` | LSTM language model, four time steps | 1,617 cubes, 16 steps |
-| `compiled.html?program=gcn` | Graph convolutional network, two layers | 604 cubes, 15 steps |
-| `compiled.html?program=gat` | Graph attention network, one layer | 1,024 cubes, 15 steps |
+| [`compiled.html`](https://hideaki.github.io/model-arithmetic-3d/compiled.html?program=transformer) | GPT-style transformer, two blocks | 8,784 cubes, 25 steps |
+| [`compiled.html?program=yolo`](https://hideaki.github.io/model-arithmetic-3d/compiled.html?program=yolo) | YOLOv3-style detector, one scale | 1,694 cubes, 13 steps |
+| [`compiled.html?program=sd`](https://hideaki.github.io/model-arithmetic-3d/compiled.html?program=sd) | Stable Diffusion v1-style text-to-image model | 24,350 cubes, 59 steps |
+| [`compiled.html?program=lstm`](https://hideaki.github.io/model-arithmetic-3d/compiled.html?program=lstm) | LSTM language model, four time steps | 1,617 cubes, 16 steps |
+| [`compiled.html?program=gcn`](https://hideaki.github.io/model-arithmetic-3d/compiled.html?program=gcn) | Graph convolutional network, two layers | 604 cubes, 15 steps |
+| [`compiled.html?program=gat`](https://hideaki.github.io/model-arithmetic-3d/compiled.html?program=gat) | Graph attention network, one layer | 1,024 cubes, 15 steps |
 
-![The transformer page at the step where every query meets every key](docs/images/transformer-attention.png)
+[![The transformer page at the step where every query meets every key](docs/images/transformer-attention.png)](https://hideaki.github.io/model-arithmetic-3d/compiled.html?program=transformer#6)
 
 ## What the pages do and do not claim
 
@@ -31,7 +33,7 @@ The generator is not finished, and is not meant to be. Every new model so far ha
 
 ## Run it
 
-You need Python 3 and a browser. Three.js is loaded from a CDN, so the first load needs a network connection. There is nothing to install and no build step.
+To look at the pages you need nothing: they are [live here](https://hideaki.github.io/model-arithmetic-3d/). To run them yourself you need Python 3 and a browser. Three.js is loaded from a CDN, so the first load needs a network connection. There is nothing to install and no build step.
 
 ```bash
 python3 serve.py 5173
@@ -238,7 +240,7 @@ Either way, the agent sits in front of the compiler and writes what a person wou
 | `test/` | Tests: every number, every highlight, the layout |
 | `tools/describe.mjs` | Prints a program's derived steps |
 | `models.html` | The list of models, with a picture and a link for each |
-| `tools/build-site.mjs` | Collects the files a static host needs into one folder: the list as the front page, and the pages without the question panel |
+| `tools/build-site.mjs` | Collects the files a static host needs into one folder: the list as the front page, and the pages without the question panel. A workflow publishes that folder to GitHub Pages on every push |
 | `serve.py`, `ask.py` | The local server and the question panel's server side |
 | `examples/agent-sdk/` | The authoring skill outside Claude Code |
 | `HANDOFF.md` | Working notes: the rules of the project, the language in brief, the layout rules, each model's state, known problems and next steps |
