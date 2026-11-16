@@ -82,7 +82,9 @@ The author writes why a step exists. What is computed, the formula, the shapes, 
 
 ## Asking about a page
 
-Every compiled page has an "Ask about this page" panel, where a viewer can ask a question and a Claude model answers with the page's own numbers. It is optional and off unless you set it up. It needs the `anthropic` Python package and an Anthropic API key, and each question is billed to that key.
+Every compiled page has an "Ask about this page" panel, where a viewer can ask a question and a Claude model answers with the page's own numbers. It needs the `anthropic` Python package and an Anthropic API key, and each question is billed to that key.
+
+The panel is optional. Without a key the pages work in full: the 3D scene, the steps, the text, and the highlight and arithmetic of every cube. Nothing but the panel calls a model. If you ask a question without a key, the panel answers with one line that says what is missing.
 
 ```bash
 python3 -m venv .venv
@@ -170,6 +172,53 @@ So the agent is allowed to change the compiler it runs on, and the procedure say
 The procedure changes too, more slowly. What a run shows to be unclear or missing in the skill is written down afterwards. The skill was revised that way after its first run; the findings of the second are recorded and not yet applied. The agent does not rewrite the procedure in the middle of a run.
 
 This is a small sample, five models, and the trend may not hold. But it is the reason the project is a generator with an agent in front of it and not a fixed viewer: a tool that covered only today's models would stop being useful at the next one.
+
+## Architecture
+
+The system has four layers. Each one works without the ones below it in this table.
+
+| Layer | Code | What it does | What it needs |
+|---|---|---|---|
+| Compiler | `lang/` | Turns a program into a scene: numbers, positions, steps, text, highlights | Nothing. Plain JavaScript with no dependencies |
+| Page | `runtime/`, `compiled.html` | Draws a scene and lets you walk through it | A browser, Three.js from a CDN, any server that hands out files |
+| Question panel | `runtime/ask*.js`, `ask.py`, `serve.py` | Answers a viewer's questions about the page | `serve.py`, the `anthropic` package, an API key |
+| Authoring agent | `.claude/skills/add-model/`, `examples/agent-sdk/` | Writes a program from a request in plain language | Claude Code, or an API key |
+
+```mermaid
+flowchart TD
+  request(["A request in plain language"]) --> agent["Authoring agent"]
+  agent -->|writes| program["Program: programs/gcn.js"]
+  program --> tensors
+  subgraph compiler ["Compiler: lang/"]
+    tensors["Tensor graph: shapes, numbers, sources of every cell"] --> layout["Layout: where every tensor sits"]
+    layout --> scene["Scene: steps, text, formulas, arrows, camera views"]
+  end
+  scene --> page["Page: runtime/viz.js draws one cube per number"]
+  scene --> tests["Tests and describe, in Node without a browser"]
+  page <-->|optional| ask["Question panel: ask.py holds the API key"]
+  tests -->|results| agent
+```
+
+### From a program to a page
+
+1. **The program runs.** A program is ordinary JavaScript. Each operation it calls (`matmul`, `softmax`, `conv2d`, in `lang/ops.js`) computes its numbers and also records, for every cell of the result, which cells it was computed from. What comes out is a graph of tensors with named axes (`lang/core.js`). Every operation belongs to one of six families, and the family fixes the rule for sources: a matrix product, for example, takes a row of one operand and a column of the other.
+2. **The layout is derived.** `lang/layout.js` places every tensor by what it is for: data flows left to right, a weight table sits beside what it multiplies, a tensor brought in from an earlier section enters on a side lane. A program contains no coordinates.
+3. **The scene is compiled.** `lang/scene.js` produces everything the page needs. For each tensor: position, labels and colours. For each step: title, formula, shapes, the author's text, a PyTorch line and a camera view. For each cube: what to say and what to light (`lang/explain.js`).
+4. **The page draws it.** `runtime/viz.js` draws the scene with Three.js, and `runtime/main.js` is the page around it. Neither knows which model it is showing.
+
+### Where it runs
+
+All four steps run in your browser, when the page loads. `compiled.html?program=gcn` imports `programs/gcn.js`, runs it, compiles the scene and draws it. Nothing is built in advance and no generated file is stored, so a page always comes from the current source. The server only hands out files.
+
+The compiler does not need a browser. The same modules run in Node: that is how the tests recompute every number and check every highlight, and how `npm run describe` prints a program's steps. The agent uses both before it looks at the page.
+
+### The question panel
+
+The conversation lives in the page. Each round is one request to `serve.py`, which passes it to `ask.py`. That side holds what must not be in a page: the API key, the standing rules and the list of tools. The model gets the page's own text and numbers, and four tools that act on the page: go to a step, read a step, show a cube, read cells. The key never reaches the browser.
+
+### The authoring agent
+
+The agent sits in front of the compiler and writes what a person would write: a program, and a test with an independent recalculation. It checks its work with the same tools as a person (`describe`, the tests, a look at the page in a browser). A change to the compiler itself needs a person's approval, as described [above](#it-grows-with-every-model).
 
 ## Layout of the code
 
