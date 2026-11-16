@@ -17,8 +17,6 @@ The pages are not drawn by hand. A model is written once as a short program in a
 | `compiled.html?program=gcn` | Graph convolutional network, two layers | 604 cubes, 15 steps |
 | `compiled.html?program=gat` | Graph attention network, one layer | 1,024 cubes, 15 steps |
 
-`index.html` is the first version of the transformer page, written by hand before the compiler existed. It is kept as a reference: a test checks that the compiled transformer matches it cube for cube.
-
 ![The transformer page at the step where every query meets every key](docs/images/transformer-attention.png)
 
 ## What the pages do and do not claim
@@ -92,14 +90,62 @@ python3 -m venv .venv
 
 Put the key in `~/.config/transformer-3d/.env` as a line `ANTHROPIC_API_KEY=...`. The top of `ask.py` explains the settings and why the file lives outside the project folder.
 
-## Adding a model
+## Asking for a new model: two ways
 
-New models are added by an AI agent following a written procedure, with a person deciding at each fork. The procedure is a Claude Code skill, `.claude/skills/add-model/SKILL.md`: research the model's exact arithmetic, propose a plan, wait for the person's decision, write the program and its tests, look at every step in a browser, and report. When the compiler cannot draw something, the skill tells the agent to say so and offer choices, never to fake it.
+The project is meant to be driven in plain language: "show me how a graph attention network works", with links to papers if you have them. An AI agent does the work and a person decides at each fork.
 
-- In Claude Code, open this folder and type `/add-model` followed by the model and any links.
-- `examples/agent-sdk/` runs the same skill from a terminal through the Claude Agent SDK. It is an example, with its own README.
+What the agent does is written down once, in `.claude/skills/add-model/SKILL.md`:
 
-The LSTM, the graph convolutional network and the graph attention network were added this way.
+1. Research the model's exact arithmetic.
+2. Propose a plan: which variant, the toy sizes, the steps, what will be left out, and what the compiler cannot draw.
+3. Stop and wait for the person's decision.
+4. Write the program and its tests, look at every step in a browser, and report.
+
+When the compiler cannot draw something, the agent is told to say so and offer choices, never to fake it. The LSTM, the graph convolutional network and the graph attention network were added this way.
+
+There are two ways to run that procedure. Both use the same skill file and the same compiler.
+
+### 1. In Claude Code (the main way)
+
+Open this folder in [Claude Code](https://claude.com/claude-code) and type:
+
+```
+/add-model graph attention network (Veličković et al., 2018), one layer
+```
+
+The agent researches, shows its proposal and waits for your answer. This is the way the project itself is developed, and the more useful of the two:
+
+- **It is a conversation.** Before approving a proposal you can ask what the model does, why a step is there, or what an alternative would cost.
+- **It does not end with the page.** The same session can fix a page, extend the compiler when a model needs a new operation, and commit the result.
+- **It runs on whatever your Claude Code runs on**, for most people a Claude plan, with Claude Code's own permission prompts.
+
+### 2. From a program of your own (an example)
+
+`examples/agent-sdk/` is a terminal program of about 290 lines, built on the Claude Agent SDK. It loads the same skill and runs the same procedure without Claude Code:
+
+```bash
+cd examples/agent-sdk
+npm install
+node add-model.mjs "graph attention network (Veličković et al., 2018), one layer"
+```
+
+It exists to show that nothing here depends on Claude Code. The compiler and the skill can be built into another application, such as a teaching tool or a web service, and that application then decides what the agent may do. The example makes those decisions in the open:
+
+- **What the agent may do without asking** is a short list in the source: read the project, write programs and tests, run the tests, look at a page in a headless Chrome.
+- **Everything else is shown to you first**, including any change to the compiler.
+- **It is billed to an Anthropic API key**, per token, and prints a running cost estimate.
+
+It is an example, not a product: one answer per line, no way to resume a conversation. Its own [README](examples/agent-sdk/README.md) lists the limits. The graph attention network was added through it.
+
+### Which one
+
+| | Claude Code | The example program |
+|---|---|---|
+| Use it when | you want to add a model, or work on the project | you want to build something of your own on the compiler |
+| You need | Claude Code | Node.js, Google Chrome, an Anthropic API key |
+| Paid by | your Claude Code account, usually a Claude plan | the API key, per token |
+| What the agent may do | Claude Code's permission settings | a list in `add-model.mjs`; the rest needs your yes |
+| Models added so far | LSTM, graph convolutional network | graph attention network |
 
 ## Layout of the code
 
@@ -108,7 +154,7 @@ The LSTM, the graph convolutional network and the graph attention network were a
 | `lang/` | The tensor language and the compiler: operations, layout, scene, generated explanations, the source checker |
 | `programs/` | One program per model |
 | `runtime/`, `compiled.html` | The page a compiled program runs in, and the question panel |
-| `src/`, `index.html` | The hand-written reference page |
+| `src/`, `index.html` | An earlier transformer page written by hand, kept because a test compares the compiled one with it |
 | `test/` | Tests: every number, every highlight, the layout |
 | `tools/describe.mjs` | Prints a program's derived steps |
 | `serve.py`, `ask.py` | The local server and the question panel's server side |
